@@ -1,0 +1,75 @@
+BD relacionales----------MongoDB
+               ----------
+  Base de Datos----------Base de Datos
+          Tabla----------Colección
+   Fila o Tupla----------Documento
+        Columna----------Field(campo)
+ Clave Primaria----------_id(Field)
+         Indice----------Indice
+       Group By----------Aggregation
+
+Conexión con MongoClient:
+Se crear un MongoClient para la instancia mongod en ejecución:
+
+myclient = pymongo.MongoClient():se conectará en el host y el puerto predeterminados
+myclient = MongoClient('localhost', 27017):Podemos especificar el host y el puerto
+myclient = MongoClient('mongodb://localhost:27017/'): formato URI de MongoDB
+
+Acceder a la bases de datos:
+                                 (usando el acceso de estilo de diccionario)   
+mydb = myclient.my_database ---=--- mydb = myclient['my_database']
+
+Obtener o acceder una colección:
+Una colección es un grupo de documentos almacenados en MongoDB y puede considerarse aproximadamente el equivalente de una tabla en una base de datos relacional. Obtener una colección en PyMongo funciona igual que obtener una base de datos:
+
+                                      (usando el acceso de estilo de diccionario)  
+col = mydb.my_collection----=-----col = db['my_collection']
+
+
+Operaciones CRUD
+
+Crear-Insertar:
+Mongo almacena los datos en forma de objetos JSON. Por lo tanto, cada registro de una colección en mongo se llama documento. Si la colección no existe actualmente, las operaciones de inserción crearán la colección.
+
+insert_one():Inserta un solo documento en una colección.
+col.insert_one(
+    {
+        nombre:"marcelo",
+        edad: 20,
+    }
+
+)
+
+insert_many(): inserta multiples documentos en una colección.
+
+col.insert_many(
+    [
+        {nombre:"karina", edad:22},
+        {nombre:"karina", edad:21},
+        {nombre:"karina", edad:20}
+    ]
+)
+
+insert(): inserta documentos individuales o un array de documentos.
+
+#documentos individual
+col.insert({nombre:"juan", edad:20})
+
+#array de documentos.
+col.insert({nombre:"juan", edad:20},{nombre:"juan", edad:20},{nombre:"juan", edad:20})
+
+
+
+Leer-Read
+Podemos recuperar los documentos de una colección usando 2 métodos.
+
+find(): Función devolverá todos los documentos de esa colección. Por defecto devuelve un objeto cursor (objeto de consulta).
+
+col.find()
+
+find_one():Para seleccionar datos de una colección en MongoDB, devuelve el primer documento de la colección, se puede especificar el dato.
+
+col.find_one()
+
+
+
