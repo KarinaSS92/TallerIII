@@ -7,7 +7,7 @@ import urllib
 from bs4 import BeautifulSoup
 import time as t
 import json
-
+from tqdm import tqdm
 	# Legislatura 
 	#     |
 	# sesiones
@@ -18,13 +18,15 @@ import json
 	# 	|
 	# votaciones
 
+#----------------------------------------
+#Funciones 
+#-----------------------------------------
+
 
 def cargar_url(url):
 	req = requests.get(url)
 	html = BeautifulSoup(req.text,"html.parser")
 	return html
-
-
 def obtenerLegislatura():
 	url= "http://opendata.camara.cl/wscamaradiputados.asmx/getLegislaturaActual"
 	html = cargar_url(url)
@@ -33,8 +35,7 @@ def obtenerLegislatura():
 	Fecha_inicio = html.fechainicio.get_text()
 	Fecha_termino = html.fechatermino.get_text()
 
-	return {"id_legislatura":id_legislatura,"Numero":Numero,"Fecha_inicio":Fecha_inicio,"Fecha_termino":Fecha_termino,"Sesiones":getSesiones(51)}
-
+	return {"id_legislatura":id_legislatura,"Numero":Numero,"Fecha_inicio":Fecha_inicio,"Fecha_termino":Fecha_termino,"Sesiones":{}}
 #Obtener diputado
 def obtener_diputado(ape_p,ape_m):
 	url = "http://opendata.camara.cl/wscamaradiputados.asmx/getDiputados_Vigentes"
@@ -67,11 +68,11 @@ def sesion_boletin(id):
 			Diputados_abstencion = []
 			aFavor ={}
 			aAbstencion ={}
-			aDispensados  = {}
-
-			#Si existe etiqueta Votaciones
+			resultado = "None"
+			
+			# #Si existe etiqueta Votaciones
 			if(votaciones != None):
-
+			 	resultado = votaciones.get("resultado")
 				#Obtiene votaciones positivas
 				positivas =  votaciones.a_favor
 				for y in positivas:
@@ -85,7 +86,6 @@ def sesion_boletin(id):
 					apellido_m = Diputados_favor[x].split(" ")[1].split(",")[0].lower()
 					if ( obtener_diputado(apellido_p,apellido_m) != "None"):
 						aFavor[x] = {"id_diputado":obtener_diputado(apellido_p,apellido_m)}
-						print x 
 
 				#Obtiene votaciones abstencion
 				if(votaciones.abstencion != None):
@@ -103,8 +103,7 @@ def sesion_boletin(id):
 			
 
 			#Guarda los datos en diccionario 
-			aSesion_Boletin[i]={"Boletin":id_boletin,"Resultado":"Aprovado","A_Favor":aFavor ,
-							    "Dispensados":aDispensados,"Abstencion":aAbstencion}
+			aSesion_Boletin[i]={"id":id_boletin,"Proyecto_Ley":ley,"Resultado":resultado,"Votos":{"Si":aFavor,"No":[],"Abstencion":aAbstencion}}
 
 			#Reinicia el diccionario
 			aFavor= {}
@@ -112,30 +111,7 @@ def sesion_boletin(id):
 			aDispensados = {}
 
 	return aSesion_Boletin
-
 #Obtiene legislatura actual
-
-
-def getSesiones(id):
-	aSesion={}
-	url ="http://opendata.camara.cl/wscamaradiputados.asmx/getSesiones?prmLegislaturaID="+str(id)
-	html = cargar_url(url)
-
-	sesiones = html.find_all('sesion')
-
-	for i in range(len(sesiones)):
-		id_sesion = sesiones[i].id.get_text()
-		numero    = sesiones[i].numero.get_text()
-		fecha     = sesiones[i].fecha.get_text()
-		ftermino  = sesiones[i].fechatermino.get_text()
-		tipo      = sesiones[i].tipo.get_text()
-		estado    = sesiones[i].estado.get_text()
-
-		aSesion[i]={"Id_sesion":id_sesion,"Numero":numero,"Fecha":fecha,"Fecha Termino":ftermino,
-					"Tipo":tipo,"Estado":estado,"Boletin":sesion_boletin(id_sesion)}
-
-	return aSesion
-
 def sesion_Detalle(id):
 	url = "http://opendata.camara.cl/wscamaradiputados.asmx/getSesionDetalle?prmSesionID="+str(id)
 	aDatos ={}
@@ -154,15 +130,33 @@ def sesion_Detalle(id):
 
 	return aDatos
 
-
-
-
 #-------------------------------------------------------
-
 #Datos finales
+#------------------------------------------------------
 
 aDatos = obtenerLegislatura()  
 
+url ="http://opendata.camara.cl/wscamaradiputados.asmx/getSesiones?prmLegislaturaID="+str(aDatos['id_legislatura'])
+html = cargar_url(url)
+sesiones = html.find_all('sesion')
+aSesion = {}
+for i in tqdm(range(len(sesiones))):
+
+	id_sesion = sesiones[i].id.get_text()
+	numero    = sesiones[i].numero.get_text()
+	fecha     = sesiones[i].fecha.get_text()
+	ftermino  = sesiones[i].fechatermino.get_text()
+	tipo      = sesiones[i].tipo.get_text()
+	estado    = sesiones[i].estado.get_text()
+
+	aSesion[i]={"Id_sesion":id_sesion,"Numero":numero,"Fecha":fecha,"Fecha Termino":ftermino,
+					"Tipo":tipo,"Estado":estado,"Boletin":sesion_boletin(id_sesion)}
+
+
+aDatos['sesiones'] = aSesion
+
+
+#Guarda los datos en un archivo
 with open('datos.json', 'w') as file:
     json.dump(aDatos, file)
 
