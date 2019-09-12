@@ -10,6 +10,10 @@ from tqdm import tqdm
 reload(sys)
 sys.setdefaultencoding('utf8')
 
+#---------------------------------
+# Funciones
+#----------------------------------
+
 #----------------------------------
 #Conexion con mongodb 
 #-----------------------------------
@@ -34,12 +38,22 @@ for i in range(len(data['sesiones'])):
 		detalle = boletin[str(y)]['detalle']
 		palabras = nltk.word_tokenize(detalle)
 		texto    = nltk.Text(palabras)
+		corpu    = nltk.corpus.stopwords.words("spanish")
 		tags     = nltk.pos_tag(palabras) #Obtiene tags con detalle de la palabra
 		fdist = nltk.FreqDist(texto) #Busca palabras que mas se repitan en el texto
 		a_tags =[]
+		guardar = True
+		#print tags
+		
+		#Quita palabras que contiene variable corpus
 		for i2 in tags :
-			if i2[1] =='NNP':
-				a_tags.append(i2[0])
+			if(i2[1] == 'NNP' and len(i2[0]) > 2):
+				for y2 in range(len(corpu)) : 
+					if ( i2[0].lower() == corpu[y2]):
+						guardar = False
+				if(guardar):
+					a_tags.append(i2[0])
+				guardar = True
 
 
 		dic_boletin[y]={'id_proyecto':boletin[str(y)]['id'],'palabras':a_tags}

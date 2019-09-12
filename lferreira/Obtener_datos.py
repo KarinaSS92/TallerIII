@@ -35,7 +35,7 @@ def obtenerLegislatura():
 	Fecha_inicio = html.fechainicio.get_text()
 	Fecha_termino = html.fechatermino.get_text()
 
-	return {"id_legislatura":id_legislatura,"Numero":Numero,"Fecha_inicio":Fecha_inicio,"Fecha_termino":Fecha_termino,"Sesiones":{}}
+	return {"id_legislatura":id_legislatura,"Numero":Numero,"Fecha_inicio":Fecha_inicio,"Fecha_termino":Fecha_termino}
 #------------------------------------------------------------------------------------------------------#
 #------------------------------------------------------------------------------------------------------#
 def get_diputados():
@@ -86,9 +86,9 @@ def sesion_boletin(id,Dic_Diputados):
 			Diputados_favor =[]
 			Diputados_abstencion = []
 			Diputados_en_contra = []
-			aFavor ={}
-			aEn_contra={}
-			aAbstencion ={}
+			aFavor =[]
+			aEn_contra=[]
+			aAbstencion =[]
 			resultado = "None"
 
 
@@ -109,7 +109,7 @@ def sesion_boletin(id,Dic_Diputados):
 					apellido_p = Diputados_favor[x].split(" ")[0].lower()
 					apellido_m = Diputados_favor[x].split(" ")[1].split(",")[0].lower()
 					id_diputado= get_idDiputado(Dic_Diputados,apellido_p,apellido_m)
-					aFavor[x]={'id_diputado':id_diputado}
+					aFavor.append(id_diputado)
 
 				#------------------------------------------------------
 				#Obtiene votaciones negativas
@@ -124,7 +124,7 @@ def sesion_boletin(id,Dic_Diputados):
 						apellido_p = Diputados_en_contra[x].split(" ")[0].lower()
 						apellido_m = Diputados_en_contra[x].split(" ")[1].split(",")[0].lower()
 						id_diputado= get_idDiputado(Dic_Diputados,apellido_p,apellido_m)
-						aEn_contra[x]= {'id_diputado':id_diputado}		
+						aEn_contra.append(id_diputado)	
 
 				#------------------------------------------------------
 				#Obtiene votaciones abstencion
@@ -139,7 +139,7 @@ def sesion_boletin(id,Dic_Diputados):
 						apellido_p = Diputados_abstencion[x].split(" ")[0].lower()
 						apellido_m = Diputados_abstencion[x].split(" ")[1].split(",")[0].lower()
 						id_diputado= get_idDiputado(Dic_Diputados,apellido_p,apellido_m)
-						aAbstencion[x]= {'id_diputado':id_diputado}			
+						aAbstencion.append(id_diputado)		
 
 				#---------------------------------------------
 				#Obtiene detalle
@@ -154,7 +154,7 @@ def sesion_boletin(id,Dic_Diputados):
 
 
 			#Guarda los datos en diccionario 
-			aSesion_Boletin[i]={"id":id_boletin,"proyecto_Ley":ley,"detalle":detalle,"resultado":resultado,"votos":{"si":aFavor,"no":aEn_contra,"abstencion":aAbstencion}}
+			aSesion_Boletin[i]={"id":id_boletin,"proyecto_Ley":ley,"detalle":detalle,"votaciones":{"resultado":resultado,"votos":{"si":aFavor,"no":aEn_contra,"abstencion":aAbstencion}}}
 
 			#Reinicia el diccionario
 			aFavor= {}
