@@ -8,12 +8,29 @@ import sys
 import json
 from pymongo import MongoClient
 from tqdm import tqdm
-
+import requests
+from bs4 import BeautifulSoup
 
 
 reload(sys)
 sys.setdefaultencoding('utf8')
 
+def get_Sinonimos(text):
+	url = "http://www.wordreference.com/sinonimos/"+text
+	resp = requests.get(url)
+	sinonimos = []
+	bs=BeautifulSoup(resp.text,'lxml')
+	lista=bs.find_all(class_='trans clickable')
+	for i in lista : 
+		sin =  i.find_all('li')
+	for i in sin : 
+		if ( i.span == None ) : 
+			for y in i.get_text().split(','):
+				
+				sinonimos.append(y.strip())
+	return sinonimos
+
+print get_Sinonimos("RECONOCIMIENTO")
 
 #AT : Artículo
 #NN : Sustantivo
@@ -51,6 +68,9 @@ tags  = pos_tag(token)
 palabras = []
 guardar = True
 
+
+	
+
 for i in tags :
 	if(i[1] == 'NNP'):
 		for y in range(len(corpu)) : 
@@ -59,9 +79,7 @@ for i in tags :
 		if(guardar):
 			palabras.append(i[0])
 		guardar = True
-print tags
-for i in tags :
-	if i[1] == "CD":
-		print i[0]
+#print tags
+
 #for i in tags : 
 #    if(i[1]=='NNP' and len(i[0])> 2): print i[0]

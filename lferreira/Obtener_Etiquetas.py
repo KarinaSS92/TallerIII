@@ -6,6 +6,9 @@ import sys
 import json
 from pymongo import MongoClient
 from tqdm import tqdm
+import requests
+from bs4 import BeautifulSoup
+
 
 reload(sys)
 sys.setdefaultencoding('utf8')
@@ -13,7 +16,21 @@ sys.setdefaultencoding('utf8')
 #---------------------------------
 # Funciones
 #----------------------------------
-
+def get_Sinonimos(text):
+	url = "http://www.wordreference.com/sinonimos/"+text
+	resp = requests.get(url)
+	sinonimos = []
+	bs=BeautifulSoup(resp.text,'lxml')
+	lista=bs.find_all(class_='trans clickable')
+	sin = ['None']
+	for i in lista : 
+		sin =  i.find_all('li')
+	for i in sin : 
+		if ( i != 'None') :
+			if(i.span == None): 
+				for y in i.get_text().split(','):
+					sinonimos.append(y.strip())
+	return sinonimos
 #----------------------------------
 #Conexion con mongodb 
 #-----------------------------------
@@ -29,7 +46,7 @@ sesiones = data['sesiones']
 
 Dic_palabras = {}
 dic_boletin  = {}
-for i in range(len(data['sesiones'])):
+for i in tqdm(range(len(data['sesiones']))):
 	boletin = sesiones[str(i)]['Boletin']
 	for y in range(len(boletin)):
 		#----------------------------------
@@ -53,6 +70,10 @@ for i in range(len(data['sesiones'])):
 						guardar = False
 				if(guardar):
 					a_tags.append(i2[0])
+					if i2[0] == None: print "True"
+					sinonimos = get_Sinonimos(i2[0])
+					for sin in sinonimos :
+						a_tags.append(sin)
 				guardar = True
 
 
