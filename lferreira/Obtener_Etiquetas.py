@@ -46,9 +46,10 @@ sesiones = data['sesiones']
 
 Dic_palabras = {}
 dic_boletin  = {}
-for i in tqdm(range(len(data['sesiones']))):
+
+for i in tqdm(range(len(data['sesiones'])),'Progreso por  Boletines'):
 	boletin = sesiones[str(i)]['Boletin']
-	for y in range(len(boletin)):
+	for y in tqdm(range(len(boletin)),' Extrayendo detalle de Proyecto id:'+boletin['id']):
 		#----------------------------------
 		#Procesamiento de texto con NLTK --
 		#----------------------------------
@@ -63,23 +64,19 @@ for i in tqdm(range(len(data['sesiones']))):
 		#print tags
 		
 		#Quita palabras que contiene variable corpus
-		for i2 in tags :
+		for i2 in tqdm(tags,'  Guardando Tags') :
 			if(i2[1] == 'NNP' and len(i2[0]) > 2):
 				for y2 in range(len(corpu)) : 
 					if ( i2[0].lower() == corpu[y2]):
 						guardar = False
 				if(guardar):
 					a_tags.append(i2[0])
-					if i2[0] == None: print "True"
 					sinonimos = get_Sinonimos(i2[0])
 					for sin in sinonimos :
 						a_tags.append(sin)
 				guardar = True
 
-
 		dic_boletin[y]={'id_proyecto':boletin[str(y)]['id'],'palabras':a_tags}
-
-
 		#print boletin
 	Dic_palabras[i] = {"id_sesion":sesiones[str(i)]['Id_sesion'],"boletin":dic_boletin}
 
