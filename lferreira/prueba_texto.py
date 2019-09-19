@@ -5,11 +5,13 @@ import pymongo
 from nltk import * 
 import time as t
 import sys
+import os
 import json
 from pymongo import MongoClient
 from tqdm import tqdm
 import requests
 from bs4 import BeautifulSoup
+
 
 
 reload(sys)
@@ -30,13 +32,13 @@ def get_Sinonimos(text):
 				sinonimos.append(y.strip())
 	return sinonimos
 
-print get_Sinonimos("RECONOCIMIENTO")
+#print get_Sinonimos("RECONOCIMIENTO")
 
-#AT : Artículo
-#NN : Sustantivo
-#VB: Verbo
-#JJ: Adjetivo.
-#
+# #AT : Artículo
+# #NN : Sustantivo
+# #VB: Verbo
+# #JJ: Adjetivo.
+# #
 
 #----------------------------------
 #Conexion con mongodb 
@@ -44,9 +46,9 @@ print get_Sinonimos("RECONOCIMIENTO")
 con = MongoClient("Localhost",27017)
 db  = con.parlamento
 
-#----------------------------------
-#Carga Coleccion 
-#----------------------------------
+# #----------------------------------
+# #Carga Coleccion 
+# #----------------------------------
 quevotan = db.quevotan
 data = quevotan.find_one()
 sesiones = data['sesiones']
@@ -54,9 +56,9 @@ sesiones = data['sesiones']
 detalle  =  sesiones['0']['Boletin']['1']['detalle']
 
 
-#----------------------------------
-# Obtener etiquetas 
-#---------------------------------
+# #----------------------------------
+# # Obtener etiquetas 
+# #---------------------------------
 
 corpu = corpus.stopwords.words("spanish")
 
@@ -81,5 +83,5 @@ for i in tags :
 		guardar = True
 #print tags
 
-#for i in tags : 
-#    if(i[1]=='NNP' and len(i[0])> 2): print i[0]
+# #for i in tags : 
+# #    if(i[1]=='NNP' and len(i[0])> 2): print i[0]
