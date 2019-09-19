@@ -35,23 +35,86 @@ def get_Sinonimos(text):
 def guardar(Dic):
 	with open("Palabras_Final.json",'w') as f:
 		json.dump(Dic,f)
+
+def crear_json2():
+	with open('Palabras.json','r') as f:
+	 file = json.load(f)
+	 for i in tqdm(range(len(file)),"Progreso Total"):
+	 	id_sesion = file[str(i)]['id_sesion']
+	 	boletin   = file[str(i)]['boletin']
+	 	pal_new   = []
+	 	for y in tqdm(range(len(boletin)),"Obteniendo sinonimos de cada Proyecto"):
+	 		id_proyecto =  boletin[str(y)]['id_proyecto']
+	 		for pal in boletin[str(y)]['palabras']:
+	 			pal_new.append(pal)
+	 			try :
+					sinonimos = get_Sinonimos(pal)
+					for sin in sinonimos:
+						pal_new.append(sin)
+	 			except requests.exceptions.ConnectionError as err:
+	 				log = open('log.txt','w')
+	 				cad = "indice_sesion:"+str(i)+",indice_boletin:"+str(y)+",utlima_palabra:"+str(pal)
+	 				log.write(cad)
+	 				log.close()
+	 				guardar(Json_sinonimos)
+	 				print err
+	 				sys.exit(1)
+	 		Dic_Proyectos[y]={'id_proyecto':id_proyecto,'palabras':pal_new}
+	 		pal_new = []
+	 	Json_sinonimos[i] = {"id_sesion":id_sesion,"boletin":Dic_Proyectos}
+	guardar(Json_sinonimos)
+
+def continua_creacion(indice_sesion,indice_boletin,utlima_palabra):
+	Json_sinonimos = {}
+	with open('Palabras_Final.json') as f:
+		Json_sinonimos = json.load(f)
+	with open('Palabras.json','r') as f:
+			 file = json.load(f)
+			 indice_s = len(file)-int(indice_sesion)
+			 continua   = False
+			 for i in tqdm(range(indice_s),"Progreso Total"):
+			 	id_sesion = file[str(i)]['id_sesion']
+			 	boletin   = file[str(i)]['boletin']
+			 	indice_b  = len(boletin)- int(indice_boletin)
+			 	pal_new   = []
+			 	for y in tqdm(range(indice_b),"Obteniendo sinonimos de cada Proyecto"):
+			 		id_proyecto =  boletin[str(y)]['id_proyecto']
+			 		for pal in boletin[str(y)]['palabras']:
+			 			pal_new.append(pal)
+			 			if(pal == utlima_palabra): continua=True
+			 			if (continua == True):
+				 			try :
+								sinonimos = get_Sinonimos(pal)
+								for sin in sinonimos:
+									pal_new.append(sin)
+				 			except requests.exceptions.ConnectionError as err:
+				 				log = open('log.txt','w')
+				 				cad = "indice_sesion:"+str(i)+",indice_boletin:"+str(y)+",utlima_palabra:"+str(pal)
+				 				log.write(cad)
+				 				log.close()
+				 				guardar(Json_sinonimos)
+				 				print err
+				 				sys.exit(1)
+			 		Dic_Proyectos[y]={'id_proyecto':id_proyecto,'palabras':pal_new}
+			 		pal_new = []
+			 	Json_sinonimos[i] = {"id_sesion":id_sesion,"boletin":Dic_Proyectos}
+	guardar(Json_sinonimos)
 #----------------------------------
 #Conexion con mongodb 
 #-----------------------------------
-con = MongoClient("Localhost",27017)
-db  = con.parlamento
-
-#----------------------------------
-#Carga Coleccion 
-#----------------------------------
-quevotan = db.quevotan
-data = quevotan.find_one()
-sesiones = data['sesiones']
-
-Dic_palabras = {}
-dic_boletin  = {}
 
 def Crear_Json():
+	con = MongoClient("Localhost",27017)
+	db  = con.parlamento
+	#----------------------------------
+	#Carga Coleccion 
+	#----------------------------------
+	quevotan = db.quevotan
+	data = quevotan.find_one()
+	sesiones = data['sesiones']
+
+	Dic_palabras = {}
+	dic_boletin  = {}	
 	print "\n \n"
 	for i in tqdm(range(len(data['sesiones'])),'Obteniendo Palabras '):
 		boletin = sesiones[str(i)]['Boletin']
@@ -105,29 +168,28 @@ else :
 
 Json_sinonimos = {}
 Dic_Proyectos  = {}
-with open('Palabras.json','r') as f:
- file = json.load(f)
- for i in tqdm(range(len(file)),"Progreso Total"):
- 	id_sesion = file[str(i)]['id_sesion']
- 	boletin   = file[str(i)]['boletin']
- 	pal_new   = []
- 	for y in tqdm(range(len(boletin)),"Obteniendo sinonimos de cada Proyecto"):
- 		id_proyecto =  boletin[str(y)]['id_proyecto']
- 		for pal in boletin[str(y)]['palabras']:
- 			pal_new.append(pal)
- 			try :
-				sinonimos = get_Sinonimos(pal)
-				for sin in sinonimos:
-					pal_new.append(sin)
- 			except requests.exceptions.ConnectionError as err:
- 				log = open('log.txt','w')
- 				cad = "indice_sesion:"+str(i)+",indice_boletin:"+str(y)+",utlima_palabra:"+str(pal)
- 				log.write(cad)
- 				log.close()
- 				guardar(Json_sinonimos)
- 				print err
- 				sys.exit(1)
- 		Dic_Proyectos[y]={'id_proyecto':id_proyecto,'palabras':pal_new}
- 		pal_new = []
- 	Json_sinonimos[i] = {"id_sesion":id_sesion,"boletin":Dic_Proyectos}
-guardar(Json_sinonimos)
+
+#Continua con la creacion del json , carga de la ultima parte que quedo 
+if( os.path.isfile('log.txt') == False ) : print "ERROR"
+else : 
+	file = open('log.txt')
+	cad  = file.read().split(',')
+	indice_sesion = cad[0].split(':')[1]
+	indice_boletin= cad[1].split(':')[1]
+	utlima_palabra= cad[2].split(':')[1]
+	if (indice_boletin == 'None' and indice_sesion == 'None' and utlima_palabra == 'None'):
+		crear_json2()
+	else:
+		continua_creacion(indice_sesion,indice_boletin,utlima_palabra)
+
+
+
+		
+
+
+
+
+
+
+
+
