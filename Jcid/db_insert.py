@@ -3,7 +3,7 @@ import json
 
 
 myclient = pymongo.MongoClient()
-mydb = myclient["prueba"]
+mydb = myclient["db-quevotan"]
 mycol = mydb["colecciones"]
 
 
