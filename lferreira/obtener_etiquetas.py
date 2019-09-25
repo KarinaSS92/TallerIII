@@ -13,6 +13,7 @@ from bs4 import BeautifulSoup
 
 reload(sys)
 sys.setdefaultencoding('utf8')
+
 #----------------------------------
 #Funciones 
 #----------------------------------
@@ -49,8 +50,7 @@ def crea_log():
 def archivo_palabras():
 	crea_log()
 	data = cargar_db()
-	Dic_palabras = {}
-	dic_boletin  = {}
+	crear_json2()
 def crear_json2():
 	with open('Palabras.json','r') as f:
 	 file = json.load(f)
@@ -78,7 +78,6 @@ def crear_json2():
 	 		pal_new = []
 	 	Json_sinonimos[i] = {"id_sesion":id_sesion,"boletin":Dic_Proyectos}
 	guardar(Json_sinonimos)
-
 def continua_creacion(indice_sesion,indice_boletin,utlima_palabra):
 	Json_sinonimos = {}
 	with open('Palabras_Final.json') as f:
@@ -114,10 +113,6 @@ def continua_creacion(indice_sesion,indice_boletin,utlima_palabra):
 			 		pal_new = []
 			 	Json_sinonimos[i] = {"id_sesion":id_sesion,"boletin":Dic_Proyectos}
 	guardar(Json_sinonimos)
-#----------------------------------
-#Conexion con mongodb 
-#-----------------------------------
-
 def Crear_Json():
 	con = MongoClient("Localhost",27017)
 	db  = con.parlamento
@@ -278,7 +273,6 @@ if ( start):
 			archivo_sinonimos()
 		else:
 			archivo_sinonimos_Continuar(indice_sesion,indice_boletin,utlima_palabra)
-
 Json_sinonimos = {}
 Dic_Proyectos  = {}
 
@@ -295,3 +289,6 @@ else :
 	else:
 		continua_creacion(indice_sesion,indice_boletin,utlima_palabra)
 
+
+
+	
