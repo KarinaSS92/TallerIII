@@ -54,7 +54,12 @@ def crea_log():
 	cad  = "indice_sesion:None,indice_boletin:None,utlima_palabra:None"
 	file.write(cad)
 	file.close()
-
+def contar_veces(elemento,lista):
+	veces = 0
+	for i in lista:
+		if elemento == i :
+			veces +=1
+	return veces 
 #-----------------------------------------------------------
 #Crea log y llama funcion donde ejecuta para crear sinonimos
 #-----------------------------------------------------------
@@ -70,7 +75,9 @@ def Crear_Json():
 	diputados    = cargar_diputados()
 	Dic_palabras = {}
 	dic_boletin  = {}	
+	dic_cantidad ={}
 	esNombre = False
+	repite   = False
 	print "\n \n"
 	for i in tqdm(range(len(sesiones)),"Extrayendo Palabras"):
 		boletin = sesiones[str(i)]['Boletin']
@@ -78,6 +85,7 @@ def Crear_Json():
 			#----------------------------------
 			#Procesamiento de texto con NLTK --
 			#----------------------------------
+			cont = 0
 			detalle = boletin[str(y)]['detalle']
 			id_proyecto= boletin[str(y)]['id']
 			palabras = nltk.word_tokenize(detalle)
@@ -86,13 +94,10 @@ def Crear_Json():
 			words    = nltk.corpus.stopwords.words("spanish")
 			tags     = nltk.pos_tag(palabras) #Obtiene tags con detalle de la palabra
 			fdist = nltk.FreqDist(texto) #Busca palabras que mas se repitan en el texto
+
 			a_tags =[]
 			guardar = True
-			
-			
-
-
-
+		
 			#Quita palabras que contiene variable words
 			for i2 in tags :
 				if(i2[1] == 'NNP' and len(i2[0]) > 2):
@@ -114,10 +119,25 @@ def Crear_Json():
 					guardar = True
 
 
-			dic_boletin[y]={'id_proyecto':id_proyecto,'palabras':a_tags}
+			#Busca las palabras que se repiten , si se repiten estas se guardan
+			for x in a_tags:
+				cantidad = contar_veces(x,a_tags)
+				if(cantidad > 1):
+					for cant in dic_cantidad: 
+						if (dic_cantidad[cant]['palabra'] == x): repite = True
+
+					#Si la palabra ya se agrego , no se vuelve a guardar
+					if ( repite == False):
+						dic_cantidad[cont] = {'palabra':x,'cantidad':cantidad}
+						cont +=1 
+				repite = False
+
+			dic_boletin[y]={'id_proyecto':id_proyecto,'palabras':dic_cantidad}
 			#print boletin
 		Dic_palabras[i] = {"id_sesion":sesiones[str(i)]['Id_sesion'],"boletin":dic_boletin}
 		dic_boletin = {}
+		dic_cantidad= {}
+		cont=0
 
 
 	#-------------------------------------
@@ -210,31 +230,32 @@ start= False
 #------------------------------------
 # Comprueba de que el archivo existe (Palabras.json)
 #-------------------------------------
-if ( os.path.isfile('json/Palabras.json') == False):
-	archivo_palabras()
-else : 
-	#Pregunta si el archivo esta vacio 
-	with open('json/Palabras.json','r') as f:
-		file = json.load(f)
-		if (len(file) == 0 ):
-			archivo_palabras()
-		else:
-			start = True
-#---------------------------------------
-# Comprueba de que el archivo existe (log.txt)
-#---------------------------------------
-if ( start):
-	if( os.path.isfile('log.txt') == False ) : 
-		print "Error No existe Log, Creando.."
-		crea_log()
-		archivo_sinonimos()
-	else : 
-		file = open('log.txt')
-		cad  = file.read().split(',')
-		indice_sesion = cad[0].split(':')[1]
-		indice_boletin= cad[1].split(':')[1]
-		utlima_palabra= cad[2].split(':')[1]
-		if (indice_boletin == 'None' and indice_sesion == 'None' and utlima_palabra == 'None'):
-			archivo_sinonimos()
-		else:
-			archivo_sinonimos_Continuar(indice_sesion,indice_boletin,utlima_palabra)
+Crear_Json()
+# if ( os.path.isfile('json/Palabras.json') == False):
+# 	archivo_palabras()
+# else : 
+# 	#Pregunta si el archivo esta vacio 
+# 	with open('json/Palabras.json','r') as f:
+# 		file = json.load(f)
+# 		if (len(file) == 0 ):
+# 			archivo_palabras()
+# 		else:
+# 			start = True
+# #---------------------------------------
+# # Comprueba de que el archivo existe (log.txt)
+# #---------------------------------------
+# if ( start):
+# 	if( os.path.isfile('log.txt') == False ) : 
+# 		print "Error No existe Log, Creando.."
+# 		crea_log()
+# 		archivo_sinonimos()
+# 	else : 
+# 		file = open('log.txt')
+# 		cad  = file.read().split(',')
+# 		indice_sesion = cad[0].split(':')[1]
+# 		indice_boletin= cad[1].split(':')[1]
+# 		utlima_palabra= cad[2].split(':')[1]
+# 		if (indice_boletin == 'None' and indice_sesion == 'None' and utlima_palabra == 'None'):
+# 			archivo_sinonimos()
+# 		else:
+# 			archivo_sinonimos_Continuar(indice_sesion,indice_boletin,utlima_palabra)
