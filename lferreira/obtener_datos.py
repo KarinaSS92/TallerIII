@@ -187,7 +187,7 @@ aDatos['sesiones'] = aSesion
 
 
 #Guarda los datos en un archivo
-with open('datos.json', 'w') as file:
+with open('json/datos.json', 'w') as file:
     json.dump(aDatos, file)
 
 
