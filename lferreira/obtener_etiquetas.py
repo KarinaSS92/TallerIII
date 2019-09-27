@@ -65,8 +65,7 @@ def contar_veces(elemento,lista):
 #-----------------------------------------------------------
 def archivo_palabras():
 	crea_log()
-	data = cargar_db()
-	archivo_sinonimos()
+	Crear_Json()
 #-------------------------------------------------------------
 #Crea json con palabras sin sinonimos , realiza parte de nltk
 #------------------------------------------------------------
@@ -157,7 +156,7 @@ def archivo_sinonimos():
 	 Json_sinonimos={}
 	 dic_palabras  ={}
 	 file = json.load(f)
-	 for i in tqdm(range(file),"Progreso Total"):
+	 for i in tqdm(range(len(file)),"Progreso Total"):
 	 	id_sesion = file[str(i)]['id_sesion']
 	 	boletin   = file[str(i)]['boletin']
 	 	pal_new   = []
@@ -188,7 +187,7 @@ def archivo_sinonimos_Continuar(indice_sesion,indice_boletin,utlima_palabra):
 	Dic_Proyectos ={}
  	Dic_sinonimos={}
  	dic_palabras  ={}
-	with open('Palabras.json','r') as f:
+	with open('json/palabras.json','r') as f:
 			 file = json.load(f)
 			 continua_sesion = False
 			 continua_boletin= False
@@ -196,7 +195,7 @@ def archivo_sinonimos_Continuar(indice_sesion,indice_boletin,utlima_palabra):
 			 for i in tqdm(range(len(file)),"Progreso Total"):
 				# Continua en el indice anterior , que quedo guardado en el log 
 				#--------------------------------------------------------------
-				if(i>int(indice_sesion)): continua_sesion = True
+				if(i>len(file)): continua_sesion = True
 				if(continua_sesion):			 
 				 	id_sesion = file[str(i)]['id_sesion']
 				 	boletin   = file[str(i)]['boletin']
@@ -204,7 +203,7 @@ def archivo_sinonimos_Continuar(indice_sesion,indice_boletin,utlima_palabra):
 				 	for y in tqdm(range(len(boletin)),"Obteniendo sinonimos de cada Proyecto"):
 				 		# Continua en el indice anterior , que quedo guardado en el log 
 				 		#--------------------------------------------------------------
-				 		if(y > int(indice_boletin)): continua_boletin = True
+				 		if(y > len(boletin)): continua_boletin = True
 				 		if(continua_boletin):	
 					 		id_proyecto =  boletin[str(y)]['id_proyecto']
 					 		palabras    = boletin[str(y)]['palabras']
@@ -236,32 +235,34 @@ start= False
 #------------------------------------
 # Comprueba de que el archivo existe (Palabras.json)
 #-------------------------------------
-Crear_Json()
-# if ( os.path.isfile('json/Palabras.json') == False):
-# 	archivo_palabras()
-# else : 
-# 	#Pregunta si el archivo esta vacio 
-# 	with open('json/Palabras.json','r') as f:
-# 		file = json.load(f)
-# 		if (len(file) == 0 ):
-# 			archivo_palabras()
-# 		else:
-# 			start = True
-# #---------------------------------------
-# # Comprueba de que el archivo existe (log.txt)
-# #---------------------------------------
-# if ( start):
-# 	if( os.path.isfile('log.txt') == False ) : 
-# 		print "Error No existe Log, Creando.."
-# 		crea_log()
-# 		archivo_sinonimos()
-# 	else : 
-# 		file = open('log.txt')
-# 		cad  = file.read().split(',')
-# 		indice_sesion = cad[0].split(':')[1]
-# 		indice_boletin= cad[1].split(':')[1]
-# 		utlima_palabra= cad[2].split(':')[1]
-# 		if (indice_boletin == 'None' and indice_sesion == 'None' and utlima_palabra == 'None'):
-# 			archivo_sinonimos()
-# 		else:
-# 			archivo_sinonimos_Continuar(indice_sesion,indice_boletin,utlima_palabra)
+if ( os.path.isfile('json/palabras.json') == False):
+	archivo_palabras()
+else : 
+	#Pregunta si el archivo esta vacio 
+	with open('json/palabras.json','r') as f:
+		file = json.load(f)
+		if (len(file) == 0 ):
+			archivo_palabras()
+		else:
+			start = True
+#---------------------------------------
+# Comprueba de que el archivo existe (log.txt)
+#---------------------------------------
+if ( start):
+	if( os.path.isfile('log.txt') == False ) : 
+		print "Error No existe Log, Creando.."
+		crea_log()
+		archivo_sinonimos()
+	else : 
+		if(os.path.isfile('json/Palabras_Final.json') == False):
+			archivo_sinonimos()
+		else:
+			file = open('log.txt')
+			cad  = file.read().split(',')
+			indice_sesion = cad[0].split(':')[1]
+			indice_boletin= cad[1].split(':')[1]
+			utlima_palabra= cad[2].split(':')[1]
+			if (indice_boletin == 'None' and indice_sesion == 'None' and utlima_palabra == 'None'):
+				archivo_sinonimos()
+			else:
+				archivo_sinonimos_Continuar(indice_sesion,indice_boletin,utlima_palabra)
