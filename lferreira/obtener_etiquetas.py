@@ -152,37 +152,42 @@ def Crear_Json():
 #Crea Archivo que contiene los sinonimos , teniendo dos funciones uno que continua donde quedo 
 #-------------------------------------------------------------
 def archivo_sinonimos():
-	with open('json/Palabras.json','r') as f:
+	with open('json/palabras.json','r') as f:
+	 Dic_Proyectos ={}
+	 Json_sinonimos={}
+	 dic_palabras  ={}
 	 file = json.load(f)
-	 for i in tqdm(range(len(file)),"Progreso Total"):
+	 for i in tqdm(range(file),"Progreso Total"):
 	 	id_sesion = file[str(i)]['id_sesion']
 	 	boletin   = file[str(i)]['boletin']
 	 	pal_new   = []
 	 	for y in tqdm(range(len(boletin)),"Obteniendo sinonimos de cada Proyecto"):
 	 		id_proyecto =  boletin[str(y)]['id_proyecto']
-	 		for pal in boletin[str(y)]['palabras']:
-	 			pal_new.append(pal)
+	 		palabras    = boletin[str(y)]['palabras']
+	 		for pal in palabras:
+	 			palabra = palabras[pal]['palabra'] 		
+	 			cantidad= palabras[pal]['cantidad']
 	 			try :
-					sinonimos = get_Sinonimos(pal)
-					for sin in sinonimos:
-						pal_new.append(sin)
+					sinonimos = get_Sinonimos(palabra)
+					dic_palabras[pal]={'palabra':palabra,'cantidad':cantidad,'sinonimos':sinonimos}
 	 			except requests.exceptions.ConnectionError as err:
 	 				log = open('log.txt','w')
-	 				cad = "indice_sesion:"+str(i)+",indice_boletin:"+str(y)+",utlima_palabra:"+str(pal)
+	 				cad = "indice_sesion:"+str(i)+",indice_boletin:"+str(y)+",utlima_palabra:"+str(palabra)
 	 				log.write(cad)
 	 				log.close()
 	 				guardar(Json_sinonimos)
 	 				print err
 	 				sys.exit(1)
-	 		Dic_Proyectos[y]={'id_proyecto':id_proyecto,'palabras':pal_new}
-	 		pal_new = []
+	 		Dic_Proyectos[y]={'id_proyecto':id_proyecto,'palabras':dic_palabras}
+	 		
+	 		dic_palabras={}
 	 	Json_sinonimos[i] = {"id_sesion":id_sesion,"boletin":Dic_Proyectos}
 	 	Dic_Proyectos={}
 	guardar(Json_sinonimos)
 def archivo_sinonimos_Continuar(indice_sesion,indice_boletin,utlima_palabra):
-	Json_sinonimos = {}
-	with open('Palabras_Final.json') as f:
-		Json_sinonimos = json.load(f)
+	Dic_Proyectos ={}
+ 	Dic_sinonimos={}
+ 	dic_palabras  ={}
 	with open('Palabras.json','r') as f:
 			 file = json.load(f)
 			 continua_sesion = False
@@ -202,27 +207,28 @@ def archivo_sinonimos_Continuar(indice_sesion,indice_boletin,utlima_palabra):
 				 		if(y > int(indice_boletin)): continua_boletin = True
 				 		if(continua_boletin):	
 					 		id_proyecto =  boletin[str(y)]['id_proyecto']
-					 		for pal in boletin[str(y)]['palabras']:
-					 			pal_new.append(pal)
-					 			if(pal == utlima_palabra): continua_palabra=True
+					 		palabras    = boletin[str(y)]['palabras']
+					 		for pal in palabras:
+					 			palabra = palabras[pal]['palabra'] 		
+ 								cantidad= palabras[pal]['cantidad']
+					 			if(palabra == utlima_palabra): continua_palabra=True
 					 			if (continua_palabra == True):
 						 			try :
 										sinonimos = get_Sinonimos(pal)
-										for sin in sinonimos:
-											pal_new.append(sin)
+										dic_palabras[pal]={'palabra':palabra,'cantidad':cantidad,'sinonimos':sinonimos}
 						 			except requests.exceptions.ConnectionError as err:
 						 				log = open('log.txt','w')
 						 				cad = "indice_sesion:"+str(i)+",indice_boletin:"+str(y)+",utlima_palabra:"+str(pal)
 						 				log.write(cad)
 						 				log.close()
-						 				guardar(Json_sinonimos)
+						 				guardar(Dic_sinonimos)
 						 				print err
 						 				sys.exit(1)
 					 		Dic_Proyectos[y]={'id_proyecto':id_proyecto,'palabras':pal_new}
 					 		pal_new = []
-				 	Json_sinonimos[i] = {"id_sesion":id_sesion,"boletin":Dic_Proyectos}
+				 	Dic_sinonimos[i] = {"id_sesion":id_sesion,"boletin":Dic_Proyectos}
 				 	Dic_Proyectos={}
-	guardar(Json_sinonimos)
+	guardar(Dic_sinonimos)
 #---------------------------
 #Variables Globales
 #---------------------------
