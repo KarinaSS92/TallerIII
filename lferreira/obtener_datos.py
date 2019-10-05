@@ -148,14 +148,14 @@ def sesion_boletin(id,Dic_Diputados):
 					remove.decompose()
 				for remove in proyectos[i].find_all("votacion"):
 					remove.decompose()
+
+
 				detalle = proyectos[i].get_text()
-
-
 
 
 			#Guarda los datos en diccionario 
 			aSesion_Boletin[i]={"id":id_boletin,"proyecto_Ley":ley,"detalle":detalle,"votaciones":{"resultado":resultado,"votos":{"si":aFavor,"no":aEn_contra,"abstencion":aAbstencion}}}
-
+			detalle =''
 			#Reinicia el diccionario
 			aFavor= {}
 			aAbstencion ={}

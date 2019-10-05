@@ -86,13 +86,14 @@ def Crear_Json():
 			#----------------------------------
 			cont = 0
 			detalle = boletin[str(y)]['detalle']
+
 			id_proyecto= boletin[str(y)]['id']
 			palabras = nltk.word_tokenize(detalle)
 
 			texto    = nltk.Text(palabras)
 			words    = nltk.corpus.stopwords.words("spanish")
 			tags     = nltk.pos_tag(palabras) #Obtiene tags con detalle de la palabra
-			fdist = nltk.FreqDist(texto) #Busca palabras que mas se repitan en el texto
+			fdist    = nltk.FreqDist(texto) #Busca palabras que mas se repitan en el texto
 
 			a_tags =[]
 			guardar = True
@@ -116,8 +117,6 @@ def Crear_Json():
 						if(esNombre == False):		
 							a_tags.append(i2[0].lower())
 					guardar = True
-
-
 			#Busca las palabras que se repiten , si se repiten estas se guardan
 			for x in a_tags:
 				cantidad = contar_veces(x,a_tags)
@@ -130,12 +129,15 @@ def Crear_Json():
 						dic_cantidad[cont] = {'palabra':x,'cantidad':cantidad}
 						cont +=1 
 				repite = False
-
+			
 			dic_boletin[y]={'id_proyecto':id_proyecto,'palabras':dic_cantidad}
+
+
+			a_tags = []
+			dic_cantidad={}
 			#print boletin
 		Dic_palabras[i] = {"id_sesion":sesiones[str(i)]['Id_sesion'],"boletin":dic_boletin}
 		dic_boletin = {}
-		dic_cantidad= {}
 		cont=0
 
 
@@ -228,6 +230,8 @@ def archivo_sinonimos_Continuar(indice_sesion,indice_boletin,utlima_palabra):
 				 	Dic_sinonimos[i] = {"id_sesion":id_sesion,"boletin":Dic_Proyectos}
 				 	Dic_Proyectos={}
 	guardar(Dic_sinonimos)
+
+
 #---------------------------
 #Variables Globales
 #---------------------------
