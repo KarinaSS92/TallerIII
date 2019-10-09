@@ -118,6 +118,8 @@ def Crear_Json():
 							a_tags.append(i2[0].lower())
 					guardar = True
 			#Busca las palabras que se repiten , si se repiten estas se guardan
+			print a_tags
+			t.sleep(30)
 			for x in a_tags:
 				cantidad = contar_veces(x,a_tags)
 				if(cantidad > 1):
