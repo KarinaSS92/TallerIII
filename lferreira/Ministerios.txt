@@ -1,20 +1,21 @@
-Ministerio del Interior y Seguridad Pública : proteccion , servicio , carabineros
+Ministerio del Interior y Seguridad Pública : proteccion , servicio , carabineros,Orden Público, Seguridad, Ciudadania, Prevencion Delincuencia Reinserción
 
-Ministerio de Relaciones Exteriores : tratado , integral , canada , unidos , internacional,convenio,
+Ministerio de Relaciones Exteriores : tratado , integral , canada , unidos , internacional,convenio,INTERNACIONAL,territorial,
 
-Ministerio de Defensa Nacional :defensa, nacional , fuerzas ,armadas 
+Ministerio de Defensa Nacional :defensa, nacional , fuerzas ,armadas,militares , Aviación , marina , guerra , Subsecretaria de defensa ,Carabineros,Academia Nacional de Estudios Políticos y Estratégicos ,ASMAR,CAPREDENA,Consejo de Salud de las Fuerzas Armadas,Cuerpo de Veteranos del 79,Defensa Civil de Chile,Dirección General de Movilización Nacional,ENAER,FAMAE,Ministerio Público Militar,Obispado Castrense de Chile
 
 Ministerio Secretaría General de Gobierno :
 
-Ministerio de Hacienda : hacienda ,
+Ministerio de Hacienda : hacienda ,administración ,financiera, Estado, política, económica,personal, Sector, Público, dotaciones,remuneraciones, jubilaciones, pensiones, montepíos, Amortizar, coordinar, acciones, financieras, ministerios,acuerdos, tratados comerciales, internacionales, Subsecretaría, Hacienda, SEREMI, BancoEstado,Casa, Moneda, Chile, Defensa, Estado, Compras, Contratación, Pública, Dirección, ChileCompra, Presupuestos, Nacional, Servicio, Civil, Superintendencia, Bancos, Instituciones, Casinos, Juego, Valores, Seguros, Servicio, Impuestos, Internos, Nacional, Aduanas, Tesorería, República, Unidad, Análisis,  Financiero
+
 
 Ministerio Secretaría General de la Presidencia :
 
-Ministerio de Economía, Fomento y Turismo :  pesca , maritimos, acuicultura , empresa , presupuestos , propiedad , industrial , fomento , empresa , pequeña , mediana , turismo ,consumidores , asociacion
+Ministerio de Economía, Fomento y Turismo :  pesca , maritimos, acuicultura , empresa , presupuestos , propiedad , industrial , fomento , empresa , pequeña , mediana , turismo ,consumidores , asociacion,Servicio Nacional de Pesca(SERNAPESCA),Servicio Nacional de Turismo (SERNATUR),Servicio Nacional del Consumidor (SERNAC)Instituto Nacional de Estadísticas de Chile (INE),Fiscalía Nacional Económica (FNE),Empresa de Abastecimiento de Zonas Aisladas (EMAZA),Sistema de Empresas Públicas (SEP),Corporación de Fomento de la Producción (CORFO),Servicio de Cooperación Técnica (SERCOTEC),Comité de Inversiones Extranjeras (CIE)
 
-Ministerio de Desarrollo Social y Familia : desarrollo , social , pobreza , educacion , familia , adopcion , adulto , mayor , sename,niño
+Ministerio de Desarrollo Social y Familia : desarrollo , social , pobreza , educacion , familia , adopcion , adulto , mayor , sename,niño,pobreza,protección social,vulnerables,familias, políticas de crecimiento, desarrollo económico, social,grupos vulnerables,Desarrollo Social, Superación de la Pobreza.
 
-Ministerio de Educación : educacion ,educacion superior , superior , instituto , docente , profesional , 
+Ministerio de Educación : educacion ,educacion superior , superior , instituto , docente , profesional ,EDUCACIONAL,Desarrollo Social, Superación de la Pobreza 
  
 Ministerio de Justicia y Derechos Humanos : codigo penal , penal , derechos , humanos , justicia
 
@@ -26,22 +27,28 @@ Ministerio de Salud :salud
 
 Ministerio de Vivienda y Urbanismo : 
 
-Ministerio de Agricultura : agricultura , silvicultura
+Ministerio de Agricultura : agricultura , silvicultura,políticas, desarrollo,Sector, Agropecuario, Pesquero ,Rural, Ministerios, Relaciones, Exteriores, Comercio, Exterior, negociación, convenios, internacionales,Subsecretaría, Agricultura, Producción, Alimentos, seguridad, alimentaria, estabilidad, equidad, social, cultural, política, económica, agrícola, productos, servicios, medio ambiente,
 
-Ministerio de Minería : mineria
 
-Ministerio de Transportes y Telecomunicaciones : telecomunicaciones,transportes, comunicaciones,transito
+Ministerio de Minería : mineria,materias, energéticas, minera, inversión, privada, pública.desarrollo de la pequeña y mediana minería a través de políticas específicas de fomento y desarrollo de mercados.
+
+
+Ministerio de Transportes y Telecomunicaciones : telecomunicaciones,transportes, comunicaciones,transito,estacionar,vehículos,motos,Obras Públicas, Transportes y Telecomunicaciones
 
 Ministerio de Bienes Nacionales : 
 
-Ministerio de Energía : energia
+Ministerio de Energía : energía solar,gas,carbón,termoeléctrica,represa,planta de energía,nuclear,eólica,
+
  
-Ministerio del Medio Ambiente : ambiente , recursos, naturales
+Ministerio del Medio Ambiente : ambiente , recursos, naturales,humedales,Medio Ambiente, Recursos Naturales,CAMBIO CLIMÁTICO,Hacienda y de Medio Ambiente y Recursos Naturales,efecto invernadero,recursos,
 
-Ministerio del Deporte :
 
-Ministerio de la Mujer y la Equidad de Género : acoso , mujer , equidad
+Ministerio del Deporte :Actividad Física,atletismo, remo, bádminton, baloncesto, boxeo, canotaje, ciclismo, ecuestre, esgrima, fútbol, gimnasia, halterofilia, balonmano, hockey, judo, natación, pentatlón moderno, taekwondo, tenis, tenis de mesa, tiro, tiro con arco , triatlón, vela y voleibol de playa, Juegos olimpicos, Copa mundial FIFA, Copa America
 
-Ministerio de las Culturas, las Artes y el Patrimonio : cultura, artes,escenicas ,patrimonio , isla , rapa
+
+Ministerio de la Mujer y la Equidad de Género : discriminación,laboral,feminismo,abuso,equidad,genero,piropo,violacion,derecho,aborto,transgénero
+,mujer,
+
+Ministerio de las Culturas, las Artes y el Patrimonio : cultura, artes,escenicas ,patrimonio , isla , rapateatro,museo,patrimonio,pintura,
 
 Ministerio de Ciencia, Tecnología, Conocimiento e Innovación : 
