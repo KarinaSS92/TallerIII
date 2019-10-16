@@ -151,56 +151,62 @@ class Ui_vtn(object):
 
 
         pal_buscar = self.txt_buscar.text()
-        texto = "No existe"
 
-        self.id_list = []
+        if(len(pal_buscar.split(" ")) > 1 ):
+            print pal_buscar.split(" ")
 
-        continuar = False
-
-        if (pal_buscar == ""): 
-            QMessageBox.warning(vtn, 'Error', "Campo Vacio !! ")
         else : 
-            continuar = True
-        if ( continuar):
-            for i in data_pal:
-                if ( i != '_id'):
-                    boletin = data_pal[i]['boletin']
-                    for bol in boletin : 
-                        id_proyecto = boletin[bol]['id_proyecto']
-                        palabras    = boletin[bol]['palabras']
-                        for pal in palabras : 
-                            palabra =  palabras[pal]['palabra']
-                            if (normalize(palabra) == normalize(pal_buscar)):
-                                texto = "existe"
-                                self.id_list.append(id_proyecto)
+            
+            texto = "No existe"
 
-                            else:
-                                sinonimos = palabras[pal]['sinonimos']
-                                for sin in sinonimos:
-                                    if (normalize(sin) == normalize(pal_buscar)):
-                                        texto = "existe"
-                                        self.id_list.append(id_proyecto)
+            self.id_list = []
 
-            if(len(self.id_list) > 0 ):
-                self.list_id.addItems(self.id_list)
-                list_positivas = []
-                primer_id = self.id_list[0]
+            continuar = False
 
-                for i in range(len(sesiones)):
-                    boletin=sesiones[str(i)]['Boletin']
-                    for y in boletin : 
-                        id_p = boletin[y]['id']
-                        if (id_p == primer_id):
-                            self.text_detalle.insertPlainText(boletin[y]['detalle'])
-                            list_positivas.append(boletin[y]['votaciones']['votos']['si'])
+            if (pal_buscar == ""): 
+                QMessageBox.warning(vtn, 'Error', "Campo Vacio !! ")
+            else : 
+                continuar = True
+            if ( continuar):
+                for i in data_pal:
+                    if ( i != '_id'):
+                        boletin = data_pal[i]['boletin']
+                        for bol in boletin : 
+                            id_proyecto = boletin[bol]['id_proyecto']
+                            palabras    = boletin[bol]['palabras']
+                            for pal in palabras : 
+                                palabra =  palabras[pal]['palabra']
+                                if (normalize(palabra) == normalize(pal_buscar)):
+                                    texto = "existe"
+                                    self.id_list.append(id_proyecto)
 
-                for i in range(len(list_positivas[0])):
-                    id_d = list_positivas[0][i]
-                    datos_d = obtener_nombre_dipu(id_d)
-                    if ( datos_d != None):
-                        for y in range(len(datos_d)):
-                            if (datos_d[y] != " "):
-                                self.tabla_votaciones.setItem(i,y, QTableWidgetItem(datos_d[y]))
+                                else:
+                                    sinonimos = palabras[pal]['sinonimos']
+                                    for sin in sinonimos:
+                                        if (normalize(sin) == normalize(pal_buscar)):
+                                            texto = "existe"
+                                            self.id_list.append(id_proyecto)
+
+                if(len(self.id_list) > 0 ):
+                    self.list_id.addItems(self.id_list)
+                    list_positivas = []
+                    primer_id = self.id_list[0]
+
+                    for i in range(len(sesiones)):
+                        boletin=sesiones[str(i)]['Boletin']
+                        for y in boletin : 
+                            id_p = boletin[y]['id']
+                            if (id_p == primer_id):
+                                self.text_detalle.insertPlainText(boletin[y]['detalle'])
+                                list_positivas.append(boletin[y]['votaciones']['votos']['si'])
+
+                    for i in range(len(list_positivas[0])):
+                        id_d = list_positivas[0][i]
+                        datos_d = obtener_nombre_dipu(id_d)
+                        if ( datos_d != None):
+                            for y in range(len(datos_d)):
+                                if (datos_d[y] != " "):
+                                    self.tabla_votaciones.setItem(i,y, QTableWidgetItem(datos_d[y]))
 
 
             if ( texto == 'No existe'):
@@ -279,7 +285,6 @@ class Ui_vtn(object):
                             list_vota.append(boletin[y]['votaciones']['votos']['no'])
                         if  (indice_votacion == 2):
                             list_vota.append(boletin[y]['votaciones']['votos']['abstencion'])
-            print list_vota
             
             for i in range(len(list_vota[0])):
                 id_d = list_vota[0][i]
