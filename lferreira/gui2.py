@@ -11,11 +11,18 @@ from PyQt5.QtWidgets import *
 from pymongo import MongoClient
 from tqdm import tqdm
 import sys
-
+import time as t
 
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
+
+def contar_veces(elemento,lista):
+    veces = 0
+    for i in lista:
+        if elemento == i :
+            veces +=1
+    return veces 
 
 def normalize(s):
     replacements = (
@@ -29,6 +36,31 @@ def normalize(s):
         s = s.replace(a, b).replace(a.upper(), b.upper())
     return s
 
+def Palabras_ministerios() :
+    file = open("Ministerios.txt","r")
+    Ministerios = {}
+    list_pal         = []
+    data = file.read().split(".")
+    for i in range(len(data)):
+        mini =  data[i].split(":")[0]
+        # Saca Salto de linea de Ministerios 
+        salto = mini.split("\n")
+        if(len(salto)> 0 ):
+            for sal in salto:
+                if ( len(sal) > 0 ):
+                    mini = sal
+        data_2= data[i].split(":")
+        for y in range(len(data_2)):
+            if ( y != 0 ):
+                palabras =  data_2[y].split(",")
+                for pal in palabras :
+                    list_pal.append(pal.lower())
+        Ministerios[i]={'Nombre':mini,'Palabras':list_pal}
+        list_pal = []
+    return Ministerios
+
+
+
 def obtener_nombre_dipu(id_d):
     con = MongoClient("Localhost",27017)
     db  = con.parlamento
@@ -41,11 +73,12 @@ def obtener_nombre_dipu(id_d):
             if(id_diputado == id_d):
                 return [id_diputado,diputados[i]['nombre'],diputados[i]['apellido_paterno']]
                
-
-
-
-
 class Ui_vtn(object):
+
+
+
+
+
     def setupUi(self, vtn):
         vtn.setObjectName("vtn")
         vtn.resize(800, 429)
@@ -134,6 +167,8 @@ class Ui_vtn(object):
     def buscar_palabra(self):
 
 
+        texto = "No existe"
+        self.Ministerios = Palabras_ministerios()
         self.list_id.clear()
         self.text_detalle.clear()
         self.tabla_votaciones.clear()
@@ -148,17 +183,78 @@ class Ui_vtn(object):
         data_votan = quevotan.find_one()
         data_pal = palabras.find_one()
         sesiones = data_votan['sesiones']
-
+        guardar = True
 
         pal_buscar = self.txt_buscar.text()
-
+        palabra_separada = pal_buscar.split(" ")
         if(len(pal_buscar.split(" ")) > 1 ):
-            print pal_buscar.split(" ")
+            for i in range(len(self.Ministerios)):
+                mini= normalize(self.Ministerios[i]['Nombre'].strip().lower()) 
+                if (mini == pal_buscar.lower()):
+                    pal =  self.Ministerios[i]['Palabras']
+                    for x in pal : 
+                        x =  x.strip()
+                        #Busca palabras relacionadas con el ministerio
+                        for i in data_pal:
+                            if ( i != '_id'):
+                                boletin = data_pal[i]['boletin']
+                                for bol in boletin : 
+                                    id_proyecto = boletin[bol]['id_proyecto']
+                                    palabras    = boletin[bol]['palabras']
+                                    for pal in palabras : 
+                                        palabra =  palabras[pal]['palabra']
+                                        if (normalize(palabra) == normalize(x)):
+                                            texto = "existe"
+                                            if (contar_veces(self.id_list,id_proyecto) <= 1):
+                                                self.id_list.append(id_proyecto)
+
+                                        else:
+                                            sinonimos = palabras[pal]['sinonimos']
+                                            for sin in sinonimos:
+                                                if (normalize(sin) == normalize(x)):
+                                                    texto = "existe"
+                                                    if( contar_veces(self.id_list,id_proyecto) <= 1):
+                                                        self.id_list.append(id_proyecto)
+
+                        if(len(self.id_list) > 0 ):
+
+                            for x in range (self.list_id.count()):
+                                if (self.list_id.itemText(x) != None):
+                                    item = self.list_id.itemText(x)
+
+                                    for in_list in self.id_list:
+                                        if (in_list == item):
+                                            guardar = False
+
+                            if ( guardar) :
+                                self.list_id.addItems(self.id_list)
+                                list_positivas = []
+                                primer_id = self.id_list[0]
+
+                                for i in range(len(sesiones)):
+                                    boletin=sesiones[str(i)]['Boletin']
+                                    for y in boletin : 
+                                        id_p = boletin[y]['id']
+                                        if (id_p == primer_id):
+                                            self.text_detalle.insertPlainText(boletin[y]['detalle'])
+                                            list_positivas.append(boletin[y]['votaciones']['votos']['si'])
+
+                                for i in range(len(list_positivas[0])):
+                                    id_d = list_positivas[0][i]
+                                    datos_d = obtener_nombre_dipu(id_d)
+                                    if ( datos_d != None):
+                                        for y in range(len(datos_d)):
+                                            if (datos_d[y] != " "):
+                                                self.tabla_votaciones.setItem(i,y, QTableWidgetItem(datos_d[y]))
+
+
+
+            if ( texto == 'No existe'):
+                QMessageBox.warning(vtn, 'Error', "Palabra no encontrada en base de datos")
+
+            pal = []
 
         else : 
-            
-            texto = "No existe"
-
             self.id_list = []
 
             continuar = False
@@ -178,35 +274,45 @@ class Ui_vtn(object):
                                 palabra =  palabras[pal]['palabra']
                                 if (normalize(palabra) == normalize(pal_buscar)):
                                     texto = "existe"
-                                    self.id_list.append(id_proyecto)
-
+                                    if( contar_veces(self.id_list,id_proyecto) <= 1):
+                                        self.id_list.append(id_proyecto)
                                 else:
                                     sinonimos = palabras[pal]['sinonimos']
                                     for sin in sinonimos:
                                         if (normalize(sin) == normalize(pal_buscar)):
                                             texto = "existe"
-                                            self.id_list.append(id_proyecto)
+                                            if( contar_veces(self.id_list,id_proyecto) <= 1):
+                                                self.id_list.append(id_proyecto)
 
                 if(len(self.id_list) > 0 ):
-                    self.list_id.addItems(self.id_list)
-                    list_positivas = []
-                    primer_id = self.id_list[0]
+                    for x in range (self.list_id.count()):
+                        if (self.list_id.itemText(x) != None):
+                            item = self.list_id.itemText(x)
+                            for in_list in self.id_list:
+                                if (in_list == item):
+                                    guardar = False
 
-                    for i in range(len(sesiones)):
-                        boletin=sesiones[str(i)]['Boletin']
-                        for y in boletin : 
-                            id_p = boletin[y]['id']
-                            if (id_p == primer_id):
-                                self.text_detalle.insertPlainText(boletin[y]['detalle'])
-                                list_positivas.append(boletin[y]['votaciones']['votos']['si'])
 
-                    for i in range(len(list_positivas[0])):
-                        id_d = list_positivas[0][i]
-                        datos_d = obtener_nombre_dipu(id_d)
-                        if ( datos_d != None):
-                            for y in range(len(datos_d)):
-                                if (datos_d[y] != " "):
-                                    self.tabla_votaciones.setItem(i,y, QTableWidgetItem(datos_d[y]))
+                    if(guardar):
+                        self.list_id.addItems(self.id_list)
+                        list_positivas = []
+                        primer_id = self.id_list[0]
+
+                        for i in range(len(sesiones)):
+                            boletin=sesiones[str(i)]['Boletin']
+                            for y in boletin : 
+                                id_p = boletin[y]['id']
+                                if (id_p == primer_id):
+                                    self.text_detalle.insertPlainText(boletin[y]['detalle'])
+                                    list_positivas.append(boletin[y]['votaciones']['votos']['si'])
+
+                        for i in range(len(list_positivas[0])):
+                            id_d = list_positivas[0][i]
+                            datos_d = obtener_nombre_dipu(id_d)
+                            if ( datos_d != None):
+                                for y in range(len(datos_d)):
+                                    if (datos_d[y] != " "):
+                                        self.tabla_votaciones.setItem(i,y, QTableWidgetItem(datos_d[y]))
 
 
             if ( texto == 'No existe'):
