@@ -98,18 +98,19 @@ def sesion_boletin(id,Dic_Diputados):
 			 	#----------------------------------------------------
 				#Obtiene votaciones positivas
 				#----------------------------------------------------
-				positivas =  votaciones.a_favor
-				for y in positivas:
-					if ( y.string != None ):
-						Diputados_favor.append(y)
-				#Quita el primer dato del arreglo
-				Diputados_favor = Diputados_favor[1:]
-				#Obtiene id de los diputados que votaron a favor
-				for x in range(len(Diputados_favor)):
-					apellido_p = Diputados_favor[x].split(" ")[0].lower()
-					apellido_m = Diputados_favor[x].split(" ")[1].split(",")[0].lower()
-					id_diputado= get_idDiputado(Dic_Diputados,apellido_p,apellido_m)
-					aFavor.append(id_diputado)
+				if (votaciones.a_favor):
+					positivas =  votaciones.a_favor
+					for y in positivas:
+						if ( y.string != None ):
+							Diputados_favor.append(y)
+					#Quita el primer dato del arreglo
+					Diputados_favor = Diputados_favor[1:]
+					#Obtiene id de los diputados que votaron a favor
+					for x in range(len(Diputados_favor)):
+						apellido_p = Diputados_favor[x].split(" ")[0].lower()
+						apellido_m = Diputados_favor[x].split(" ")[1].split(",")[0].lower()
+						id_diputado= get_idDiputado(Dic_Diputados,apellido_p,apellido_m)
+						aFavor.append(id_diputado)
 
 				#------------------------------------------------------
 				#Obtiene votaciones negativas

@@ -1,1 +1,1 @@
-indice_sesion:26,indice_boletin:0,utlima_palabra:cámara
+indice_sesion:None,indice_boletin:None,utlima_palabra:None

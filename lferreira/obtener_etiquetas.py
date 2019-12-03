@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # Import libraries
 import pymongo 
 import nltk
@@ -60,6 +61,18 @@ def contar_veces(elemento,lista):
 		if elemento == i :
 			veces +=1
 	return veces 
+
+def normalize(s):
+    replacements = (
+        ("á", "a"),
+        ("é", "e"),
+        ("í", "i"),
+        ("ó", "o"),
+        ("ú", "u"),
+    )
+    for a, b in replacements:
+        s = s.replace(a, b).replace(a.upper(), b.upper())
+    return s
 #-----------------------------------------------------------
 #Crea log y llama funcion donde ejecuta para crear sinonimos
 #-----------------------------------------------------------
@@ -100,9 +113,12 @@ def Crear_Json():
 		
 			#Quita palabras que contiene variable words
 			for i2 in tags :
-				if(i2[1] == 'NNP' and len(i2[0]) > 2):
+				if(i2[1] == 'NNP' and len(i2[0]) > 3):
+					for ver in i2[0]:
+						if(ver == '.'):
+							guardar = False
 					for y2 in range(len(words)) : 
-						if ( i2[0].lower() == words[y2]):
+						if ( normalize(i2[0].lower()) == normalize(words[y2])):
 							guardar = False
 					if(guardar):
 						esNombre= False
@@ -118,8 +134,6 @@ def Crear_Json():
 							a_tags.append(i2[0].lower())
 					guardar = True
 			#Busca las palabras que se repiten , si se repiten estas se guardan
-			print a_tags
-			t.sleep(30)
 			for x in a_tags:
 				cantidad = contar_veces(x,a_tags)
 				if(cantidad > 1):
