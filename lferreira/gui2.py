@@ -74,11 +74,6 @@ def obtener_nombre_dipu(id_d):
                 return [id_diputado,diputados[i]['nombre'],diputados[i]['apellido_paterno']]
                
 class Ui_vtn(object):
-
-
-
-
-
     def setupUi(self, vtn):
         vtn.setObjectName("vtn")
         vtn.resize(800, 429)
@@ -88,6 +83,42 @@ class Ui_vtn(object):
         self.txt_buscar.setGeometry(QtCore.QRect(110, 20, 191, 21))
         self.txt_buscar.setObjectName("txt_buscar")
         
+        con = MongoClient("Localhost",27017)
+        db  = con.parlamento 
+        palabras = db.palabras.find_one()
+
+        list_pal = []
+        for i in palabras :
+        	if (i != '_id'):
+        		bol = palabras[i]['boletin']
+        		for y in bol : 
+        			pal = bol[y]['palabras']
+        			for x in pal:
+        				list_pal.append(pal[x]['palabra']) 
+        				for sin in pal[x]['sinonimos']:
+        					list_pal.append(sin) 
+        
+        file = open("Ministerios.txt","r")
+        data = file.read().split(".")
+        for i in range(len(data)):
+        	mini =  data[i].split(":")[0]
+        	salto = mini.split("\n")
+        	if(len(salto)> 0 ):
+        		for sal in salto:
+        			if ( len(sal) > 0 ):
+        				mini = sal
+        				list_pal.append(mini)
+        	data_2= data[i].split(":")
+        	for y in range(len(data_2)):
+        		if ( y != 0 ):
+        			palabras =  data_2[y].split(",")
+        			for pal in palabras :
+        				list_pal.append(pal.lower())
+        list_pal = list(set(list_pal))
+        completer = QCompleter(list_pal)
+                              
+        self.txt_buscar.setCompleter(completer)
+
         self.lbl_buscar = QLabel(vtn)
         self.lbl_buscar.setGeometry(QtCore.QRect(50, 20, 59, 15))
         self.lbl_buscar.setObjectName("lbl_buscar")
@@ -164,9 +195,10 @@ class Ui_vtn(object):
         self.lbl_detalle.setText(_translate("vtn", "Detalle de Proyecto : "))
         self.lbl_votaciones.setText(_translate("vtn", "Votaciones : "))
    
+   
+
+
     def buscar_palabra(self):
-
-
         texto = "No existe"
         self.Ministerios = Palabras_ministerios()
         self.list_id.clear()
@@ -205,17 +237,16 @@ class Ui_vtn(object):
                                         palabra =  palabras[pal]['palabra']
                                         if (normalize(palabra) == normalize(x)):
                                             texto = "existe"
-                                            if (contar_veces(self.id_list,id_proyecto) <= 1):
-                                                self.id_list.append(id_proyecto)
+                                            self.id_list.append(id_proyecto)
+                                            self.id_list = list(set(self.id_list))
 
                                         else:
                                             sinonimos = palabras[pal]['sinonimos']
                                             for sin in sinonimos:
                                                 if (normalize(sin) == normalize(x)):
                                                     texto = "existe"
-                                                    if( contar_veces(self.id_list,id_proyecto) <= 1):
-                                                        self.id_list.append(id_proyecto)
-
+                                                    self.id_list.append(id_proyecto)
+                                                    self.id_list = list(set(self.id_list))
                         if(len(self.id_list) > 0 ):
 
                             for x in range (self.list_id.count()):
@@ -273,16 +304,16 @@ class Ui_vtn(object):
                             for pal in palabras : 
                                 palabra =  palabras[pal]['palabra']
                                 if (normalize(palabra) == normalize(pal_buscar)):
-                                    texto = "existe"
-                                    if( contar_veces(self.id_list,id_proyecto) <= 1):
-                                        self.id_list.append(id_proyecto)
+                                    texto = "existe"                 
+                                    self.id_list.append(id_proyecto)
+                                    self.id_list = list(set(self.id_list))
                                 else:
                                     sinonimos = palabras[pal]['sinonimos']
                                     for sin in sinonimos:
                                         if (normalize(sin) == normalize(pal_buscar)):
                                             texto = "existe"
-                                            if( contar_veces(self.id_list,id_proyecto) <= 1):
-                                                self.id_list.append(id_proyecto)
+                                            self.id_list.append(id_proyecto)
+                                            self.id_list = list(set(self.id_list))	
 
                 if(len(self.id_list) > 0 ):
                     for x in range (self.list_id.count()):
